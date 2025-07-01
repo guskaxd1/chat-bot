@@ -1,14 +1,12 @@
+console.log('Iniciando o bot...');
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth, Buttons, List, MessageMedia } = require('whatsapp-web.js');
 const http = require('http');
 
-console.log('Iniciando o bot...');
-
 const client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: {
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium'
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     }
 });
 
