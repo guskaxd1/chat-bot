@@ -1,43 +1,42 @@
 const qrcode = require('qrcode-terminal');
-const { Client, Buttons, List, MessageMedia, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, Buttons, List, MessageMedia } = require('whatsapp-web.js');
+const http = require('http');
 
-// Cria cliente com Puppeteer sem sandbox (obrigatório no Render)
+// Configuração do cliente com autenticação persistente e flags do Puppeteer
 const client = new Client({
-    authStrategy: new LocalAuth(), // Armazena sessão no diretório .wwebjs_auth
+    authStrategy: new LocalAuth(), // Salva a sessão para evitar QR code repetido
     puppeteer: {
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Flags para compatibilidade com Render
     }
 });
 
-// Geração de QR Code
+// Endpoint HTTP para manter o bot ativo (UptimeRobot)
+http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Bot is alive!');
+}).listen(process.env.PORT || 3000);
+
 client.on('qr', qr => {
     qrcode.generate(qr, { small: true });
 });
 
-// Conexão pronta
 client.on('ready', () => {
-    console.log('✅ WhatsApp conectado.');
+    console.log('WhatsApp conectado.✅');
 });
 
-// Inicializa o cliente
 client.initialize();
 
-// Função de delay
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
-// Funil de mensagens
+// Funil
 client.on('message', async msg => {
     if (msg.body.match(/(menu|Menu|dia|tarde|noite|oi|Oi|Olá|olá|ola|Ola)/i) && msg.from.endsWith('@c.us')) {
         const chat = await msg.getChat();
-        const contact = await msg.getContact();
-        const name = contact.pushname || 'amigo';
-        await delay(2000);
-        await chat.sendStateTyping();
-        await delay(2000);
-        await client.sendMessage(msg.from, `Olá, ${name.split(" ")[0]}! Tudo bem? 🤖`);
-        
-        await delay(2000);
-        await chat.sendStateTyping();
-        await client.sendMessage(msg.from, `Eu sou um robô criado por *guskaxd*! 😎`);
+        await delay(3000); // Delay de 3 segundos
+        await chat.sendStateTyping(); // Simulando Digitação
+        await delay(3000); // Delay de 3 segundos
+        const contact = await msg.getContact(); // Pegando o contato
+        const name = contact.pushname; // Pegando o nome do contato
+        await client.sendMessage(msg.from,'Olá! '+ name.split(" ")[0] + ' tudo bem? quem te enviou essa mensagem foi um robo criado por guskaxd.'); //Primeira mensagem de texto
     }
 });
