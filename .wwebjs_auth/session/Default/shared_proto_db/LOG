@@ -1,2 +1,3 @@
-2025/07/01-17:45:19.463 5be0 Creating DB C:\Users\gusko\OneDrive\Área de Trabalho\dev\myarchives\projects\chat-bot\.wwebjs_auth\session\Default\shared_proto_db since it was missing.
-2025/07/01-17:45:19.469 5be0 Reusing MANIFEST C:\Users\gusko\OneDrive\Área de Trabalho\dev\myarchives\projects\chat-bot\.wwebjs_auth\session\Default\shared_proto_db/MANIFEST-000001
+2025/07/03-13:11:16.393 3f68 Reusing MANIFEST C:\Users\gusko\OneDrive\Área de Trabalho\dev\myarchives\projects\chat-bot\.wwebjs_auth\session\Default\shared_proto_db/MANIFEST-000001
+2025/07/03-13:11:16.400 3f68 Recovering log #3
+2025/07/03-13:11:16.401 3f68 Reusing old log C:\Users\gusko\OneDrive\Área de Trabalho\dev\myarchives\projects\chat-bot\.wwebjs_auth\session\Default\shared_proto_db/000003.log 

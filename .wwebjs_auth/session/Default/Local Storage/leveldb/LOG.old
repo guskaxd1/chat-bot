@@ -1,2 +1,5 @@
-2025/07/01-17:38:29.232 59ec Creating DB C:\Users\gusko\OneDrive\Área de Trabalho\dev\myarchives\projects\chat-bot\.wwebjs_auth\session\Default\Local Storage\leveldb since it was missing.
-2025/07/01-17:38:29.265 59ec Reusing MANIFEST C:\Users\gusko\OneDrive\Área de Trabalho\dev\myarchives\projects\chat-bot\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
+2025/07/03-14:13:53.397 2b08 Reusing MANIFEST C:\Users\gusko\OneDrive\Área de Trabalho\dev\myarchives\projects\chat-bot\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
+2025/07/03-14:13:53.398 2b08 Recovering log #22
+2025/07/03-14:13:53.398 2b08 Level-0 table #25: started
+2025/07/03-14:13:53.408 2b08 Level-0 table #25: 15070 bytes OK
+2025/07/03-14:13:53.411 2b08 Delete type=0 #22
