@@ -12,7 +12,7 @@ const client = new Client({
     }
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT; // Remove o fallback para 10000
 console.log(`Iniciando servidor na porta ${port}...`);
 http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -29,6 +29,8 @@ client.on('ready', () => {
     console.log('WhatsApp conectado.✅');
     // Executa a cobrança automaticamente ao conectar
     checkCobrançaRecorrente();
+    // Verifica a cada hora se é hora de enviar uma nova cobrança
+    setInterval(checkCobrançaRecorrente, 60 * 60 * 1000); // 1 hora
 });
 
 client.on('auth_failure', (msg) => {
@@ -94,7 +96,7 @@ client.on('message', async msg => {
         const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 dias depois
         await fs.writeFile('lastCobrança.txt', thirtyDaysLater.toISOString(), 'utf8');
         console.log(`[DEBUG] Próxima cobrança agendada para: ${thirtyDaysLater.toISOString()}`);
-        await client.sendMessage(msg.from, 'Pagamento confirmado! A próxima cobrança será em 30 dias.');
+        await client.sendMessage(msg.from, 'Pagamento confirmei! A próxima cobrança será em 30 dias.');
     }
 });
 
