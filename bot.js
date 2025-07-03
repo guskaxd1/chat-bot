@@ -2,7 +2,7 @@ console.log('Iniciando o bot...');
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const http = require('http');
-const fs = require('fs').promises; // Usando fs.promises para operações assíncronas
+const Database = require('better-sqlite3'); // Adiciona SQLite
 
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -12,12 +12,25 @@ const client = new Client({
     }
 });
 
-const port = process.env.PORT; // Remove o fallback para 10000
+const port = process.env.PORT; // Usa apenas a porta definida pelo Render
 console.log(`Iniciando servidor na porta ${port}...`);
 http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Bot is alive!');
 }).listen(port);
+
+// Inicializa o banco de dados SQLite
+const db = new Database('cobrança.db', { verbose: console.log });
+db.exec(`
+    CREATE TABLE IF NOT EXISTS ultima_cobranca (
+        id INTEGER PRIMARY KEY,
+        data TEXT
+    )
+`);
+let ultimaCobranca = db.prepare('SELECT data FROM ultima_cobranca').get();
+if (!ultimaCobranca) {
+    db.prepare('INSERT INTO ultima_cobranca (data) VALUES (?)').run(null); // Inicializa com null se não existir
+}
 
 client.on('qr', qr => {
     console.log('QR Code gerado. Escaneie com o WhatsApp:');
@@ -94,7 +107,7 @@ client.on('message', async msg => {
         console.log(`[DEBUG] Confirmação recebida de ${msg.from}`);
         const now = new Date();
         const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 dias depois
-        await fs.writeFile('lastCobrança.txt', thirtyDaysLater.toISOString(), 'utf8');
+        db.prepare('UPDATE ultima_cobranca SET data = ?').run(thirtyDaysLater.toISOString());
         console.log(`[DEBUG] Próxima cobrança agendada para: ${thirtyDaysLater.toISOString()}`);
         await client.sendMessage(msg.from, 'Pagamento confirmei! A próxima cobrança será em 30 dias.');
     }
@@ -103,9 +116,9 @@ client.on('message', async msg => {
 // Função para verificar e disparar a cobrança recorrente
 const checkCobrançaRecorrente = async () => {
     try {
-        const lastCobrança = await fs.readFile('lastCobrança.txt', 'utf8').catch(() => null);
+        const ultimaCobranca = db.prepare('SELECT data FROM ultima_cobranca').get();
         const now = new Date();
-        const lastDate = lastCobrança ? new Date(lastCobrança) : null;
+        const lastDate = ultimaCobranca?.data ? new Date(ultimaCobranca.data) : null;
         const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000; // 30 dias
 
         if (!lastDate || (now >= lastDate)) { // Verifica se a data passou ou é a primeira execução
